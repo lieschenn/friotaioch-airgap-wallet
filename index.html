@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; media-src 'self' blob:; worker-src 'self' blob:" />
+    <meta name="theme-color" content="#0b0e12" />
+    <title>Friotaíoch AirGap Wallet</title>
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div><div class="brand-name">FRIOTAÍOCH</div><div class="brand-caption">DESKTOP WALLET</div></div>
+        </div>
+        <div class="network-chip"><span class="status-dot"></span><span>FRIO MAINNET</span><span class="network-caret">⌄</span></div>
+        <div class="side-label">WALLET</div>
+        <nav class="main-nav" aria-label="Main navigation">
+          <button class="nav-item active" data-page="overview"><span class="nav-icon">◫</span>Overview</button>
+          <button class="nav-item" data-page="activity"><span class="nav-icon">↕</span>Activity</button>
+          <button class="nav-item" data-page="receive"><span class="nav-icon">↓</span>Receive</button>
+          <button class="nav-item" data-page="send"><span class="nav-icon">↑</span>Send</button>
+        </nav>
+        <div class="side-spacer"></div>
+        <div class="vault-card"><div class="vault-icon">◈</div><div><div class="vault-title">Keys stay offline</div><div class="vault-copy">Transactions are signed in AirGap Vault.</div></div><span class="vault-check">✓</span></div>
+        <button class="nav-item settings-link" data-page="settings"><span class="nav-icon">⚙</span>Settings</button>
+        <div class="sidebar-footer"><span class="footer-version">FRIO AIRGAP · 0.3.11</span><span class="connection-state"><i id="sidebarDot"></i><span id="sidebarStatus">Not connected</span></span></div>
+      </aside>
+
+      <main class="main-area">
+        <header class="topbar">
+          <div class="breadcrumbs"><span>Wallet</span><b>/</b><strong id="pageLabel">Overview</strong></div>
+          <div class="topbar-actions">
+            <select id="walletSelector" class="wallet-selector" aria-label="Switch saved wallet" hidden></select>
+            <div class="node-pill"><i id="nodeDot"></i><span id="nodeStatus">Node offline</span></div>
+            <button class="icon-button" id="settingsButton" aria-label="Open settings" title="Settings">⚙</button>
+            <div class="avatar">F</div>
+          </div>
+        </header>
+
+        <section class="content-page active" id="overviewPage">
+          <div class="page-heading"><div><div class="eyebrow">YOUR FRIO WALLET</div><h1>Overview</h1><p class="subheading">A watch-only desktop wallet with offline AirGap signing.</p></div><button class="button button-secondary" id="refreshButton">↻ <span>Refresh</span></button></div>
+          <div class="setup-banner" id="setupBanner">
+            <div class="setup-orbit"><div class="orbit-core">F</div><span class="orbit-path"></span><span class="orbit-satellite">◈</span></div>
+            <div class="setup-copy"><span class="setup-tag">GET STARTED</span><h2>Connect your FRIO wallet</h2><p>Pair the public account from AirGap Vault, then connect your local Friotaíoch node to view funds and prepare transfers.</p><div class="setup-actions"><button class="button button-primary" id="connectButton">Connect node <span>→</span></button><button class="button button-quiet" id="pairButton">Pair AirGap Vault</button></div></div>
+            <div class="setup-steps"><div class="step-row"><span class="step-number">01</span><span>Connect to your local FRIO node</span></div><div class="step-row"><span class="step-number">02</span><span>Scan the AirGap SegWit account QR</span></div><div class="step-row"><span class="step-number">03</span><span>Review and sign transfers offline</span></div></div>
+          </div>
+
+          <div class="overview-grid">
+            <article class="balance-card panel">
+              <div class="card-topline"><span class="card-eyebrow">TOTAL BALANCE</span><span class="balance-state"><i></i><span id="balanceCaption">Awaiting wallet connection</span></span></div>
+              <div class="balance-line"><strong id="balanceValue">—</strong><span>FRIO</span></div>
+              <div class="balance-bottom"><span id="balanceFiat">Local node balance</span><button class="text-button" data-nav="activity">View activity <span>→</span></button></div>
+              <div class="balance-watermark" aria-hidden="true">F</div>
+            </article>
+            <article class="node-card panel">
+              <div class="card-eyebrow">NETWORK STATUS</div>
+              <div class="node-status-row"><span class="node-symbol">⌘</span><div><strong id="nodeCardTitle">Local node required</strong><small id="nodeCardCopy">Your desktop connects only to a local FRIO node.</small></div></div>
+              <div class="node-details"><div><span>Network</span><strong id="networkName">FRIO mainnet</strong></div><div><span>Block height</span><strong id="blockHeight">—</strong></div></div>
+              <button class="text-button" id="nodeSettingsLink">Node connection <span>→</span></button>
+            </article>
+          </div>
+
+          <div class="section-title-row"><div><div class="eyebrow">WALLET</div><h2>Account overview</h2></div><span class="section-note" id="walletMode">Watch-only · no private keys</span></div>
+          <div class="account-grid">
+            <article class="account-card panel"><div class="account-header"><div class="account-icon">▧</div><div><strong id="activeWalletName">AirGap SegWit</strong><span id="accountPath">BIP84 · m/84′/0′/0′</span></div><span class="account-badge" id="accountBadge">Not paired</span></div><div class="account-address"><span id="currentAddressLabel">RECEIVE ADDRESS · INDEX #0</span><div class="account-address-content"><div id="currentAddress">Pair a Vault account to generate an address</div><button class="copy-button" id="copyAddress" aria-label="Copy FRIO address">▢</button></div></div><button class="button button-secondary button-full" id="receiveButton">View first receive address <span>→</span></button></article>
+            <article class="security-card panel"><div class="security-heading"><span class="security-lock">◈</span><div><strong>Air-gapped signing</strong><span>Private keys remain on your Vault phone</span></div></div><div class="security-line"><span class="security-check">✓</span><span>Desktop stores public account details only</span></div><div class="security-line"><span class="security-check">✓</span><span>Unsigned PSBTs move by animated QR</span></div><div class="security-line"><span class="security-check">✓</span><span>Signed transaction is checked before broadcast</span></div><button class="text-button" id="securityLink">How signing works <span>→</span></button></article>
+          </div>
+          <div class="section-title-row activity-heading"><div><div class="eyebrow">LATEST</div><h2>Recent activity</h2></div><button class="text-button" data-nav="activity">All activity <span>→</span></button></div>
+          <article class="activity-card panel" id="recentActivity"><div class="empty-state"><span class="empty-icon">↕</span><strong>No activity yet</strong><span>Connect your node and pair an AirGap account.</span></div></article>
+        </section>
+
+        <section class="content-page" id="activityPage">
+          <div class="page-heading"><div><div class="eyebrow">TRANSACTION HISTORY</div><h1>Activity</h1><p class="subheading">Recent incoming and outgoing FRIO transfers.</p></div><button class="button button-secondary" id="activityRefresh">↻ <span>Refresh</span></button></div>
+          <article class="activity-card panel" id="fullActivity"><div class="empty-state"><span class="empty-icon">↕</span><strong>Wallet not connected</strong><span>Connect your FRIO node and pair your account to see transactions.</span></div></article>
+        </section>
+
+        <section class="content-page" id="receivePage">
+          <div class="page-heading"><div><div class="eyebrow">RECEIVE FRIO</div><h1>Receive</h1><p class="subheading">Your first address is always BIP84 receive index #0.</p></div></div>
+          <div class="receive-layout"><article class="receive-card panel"><div class="receive-card-title"><div class="receive-icon">↓</div><div><strong>Your receive address</strong><span id="receiveIndexLabel">BIP84 receive index #0</span></div></div><div class="receive-qr-wrap"><div id="receiveQr" class="receive-qr"><span>Connect and pair a wallet to derive an address</span></div></div><div class="receive-address-text" id="receiveAddressText">—</div><button class="button button-primary button-full" id="newAddressButton">Show next receive address <span>→</span></button><div class="receive-note"><span>i</span><span>The Bitcoin row is what AirGap Vault displays. Orange marks BTC-only text; green marks FRIO-only text. The neutral middle is identical.</span></div></article><article class="addresses-card panel"><div class="list-heading"><div><strong>Receive addresses by index</strong><span>FRIO and AirGap Bitcoin equivalent addresses</span></div><span class="address-count" id="addressCount">0</span></div><div id="addressList" class="address-list"><div class="empty-inline">Connect and pair an account to derive addresses.</div></div></article></div>
+        </section>
+
+        <section class="content-page" id="sendPage">
+          <div class="page-heading"><div><div class="eyebrow">SEND FRIO</div><h1>Send</h1><p class="subheading">Prepare a transfer and approve it in AirGap Vault.</p></div></div>
+          <div class="send-layout"><article class="send-card panel"><div class="send-card-heading"><div class="send-step-icon">↑</div><div><strong>New transfer</strong><span>Funds are spent only after AirGap signs the PSBT.</span></div></div><form id="sendForm"><label for="recipient">Recipient address</label><div class="input-wrap"><input id="recipient" autocomplete="off" spellcheck="false" placeholder="frio1q… or bc1p…" /><span class="field-icon">▣</span></div><div class="field-hint">Paste a FRIO address or Bitcoin bc1q / Taproot bc1p address. Bitcoin addresses convert to FRIO.</div><div id="recipientEquivalent" class="recipient-equivalent" hidden></div><label for="amount">Amount</label><div class="input-wrap amount-wrap"><input id="amount" inputmode="decimal" placeholder="0.00000000" /><span>FRIO</span></div><label for="feeRate">Manual fee rate</label><div class="input-wrap amount-wrap fee-rate-wrap"><input id="feeRate" inputmode="decimal" type="number" min="0.1" max="1000" step="0.001" value="1" /><span>sat/vB</span></div><div class="field-hint">This rate overrides node fee estimation and is saved on this computer.</div><div class="send-balance"><span>Available balance</span><strong id="availableBalance">— FRIO</strong></div><div class="send-divider"></div><div class="fee-row"><div><span class="fee-label">Network fee</span><small>Manual rate · sat/vB</small></div><strong id="feeEstimate">Calculated before signing</strong></div><button class="button button-primary button-full" type="submit" id="prepareButton" disabled>Review transfer <span>→</span></button></form></article><article class="send-aside panel"><div class="aside-art"><span class="aside-ring ring-one"></span><span class="aside-ring ring-two"></span><span class="aside-symbol">◈</span><span class="aside-scan">QR</span></div><div class="aside-copy"><div class="eyebrow">AIRGAP VAULT</div><h3>Approve on your phone</h3><p>Your desktop prepares a standard SegWit transaction. AirGap Vault signs the PSBT offline, then the signed QR returns here for review and broadcast.</p><div class="flow-steps"><div><i>1</i><span>Scan the unsigned QR in AirGap</span></div><div><i>2</i><span>Approve the transfer on your phone</span></div><div><i>3</i><span>Scan the signed QR with this camera</span></div></div></div></article></div>
+        </section>
+
+        <section class="content-page" id="settingsPage">
+          <div class="page-heading"><div><div class="eyebrow">PREFERENCES</div><h1>Settings</h1><p class="subheading">Manage your local node connection and public wallet account.</p></div></div>
+          <div class="settings-stack"><article class="settings-card panel"><div class="settings-card-title"><div class="settings-icon">⌘</div><div><strong>Friotaíoch Core connection</strong><span>Local RPC · this app will not connect to a remote node</span></div><span class="setting-status" id="settingsNodeState">Not connected</span></div><form id="settingsForm" class="settings-form"><label for="rpcUrl">RPC address</label><input id="rpcUrl" value="http://127.0.0.1:51777" autocomplete="off" /><div class="credentials-row"><div><label for="rpcUser">RPC username</label><input id="rpcUser" autocomplete="off" placeholder="From friotaioch.conf" /></div><div><label for="rpcPassword">RPC password</label><input id="rpcPassword" type="password" autocomplete="new-password" placeholder="Saved encrypted in system storage" /></div></div><div class="settings-help">Enable RPC in your local <code>friotaioch.conf</code>. The app encrypts saved credentials with your operating system's secure storage.</div><label class="confirm-line auto-connect-option"><input id="autoConnect" type="checkbox" checked /><span>Reconnect automatically when this app opens</span></label><button class="button button-primary" type="submit">Connect to mainnet <span>→</span></button></form></article><article class="settings-card panel"><div class="settings-card-title"><div class="settings-icon">▧</div><div><strong>AirGap public account</strong><span>BIP84 SegWit account · m/84′/0′/0′</span></div><span class="setting-status" id="settingsAccountState">Not paired</span></div><div class="settings-account-actions"><button class="button button-secondary" id="settingsPairButton">Add / import wallet</button><button class="button button-quiet" id="forgetAccountButton">Forget local descriptor</button></div><div class="settings-help">Saved wallet descriptors stay on this computer. Use the wallet selector in the top bar to switch accounts. AirGap xpub and zpub SegWit exports are supported; seed phrases and private keys never enter this desktop app.</div></article><article class="settings-card panel protocol-card"><div class="settings-icon protocol-logo">F</div><div><strong>Friotaíoch · FRIO mainnet</strong><span>SegWit v0 addresses · starts with frio1q</span></div><a href="https://www.friotaioch.com/" data-external class="text-button">Network details ↗</a></article></div>
+        </section>
+
+        <footer class="main-footer"><span>FRIOTAÍOCH AIRGAP WALLET</span><span>Watch-only desktop · AirGap Vault signs offline</span></footer>
+      </main>
+    </div>
+
+    <div class="modal-backdrop hidden" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal panel"><div class="modal-header"><div><div class="eyebrow" id="modalEyebrow">FRIO WALLET</div><h2 id="modalTitle">Connect</h2></div><button class="modal-close" id="modalClose" aria-label="Close">×</button></div><div class="modal-content" id="modalContent"></div></div></div>
+    <div class="toast" id="toast" role="status"></div>
+    <script src="./node_modules/qr-scanner/qr-scanner.legacy.min.js"></script>
+    <script type="module" src="./src/ui.js"></script>
+  </body>
+</html>
