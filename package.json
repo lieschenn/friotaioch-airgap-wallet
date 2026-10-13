@@ -8,8 +8,8 @@
   "scripts": {
     "start": "electron .",
     "build": "electron-builder --dir",
-    "pack:win": "electron-builder --win portable",
-    "pack:linux": "electron-builder --linux AppImage"
+    "pack:win": "electron-builder --win portable --publish never",
+    "pack:linux": "electron-builder --linux AppImage --publish never"
   },
   "build": {
     "appId": "com.friotaioch.airgapwallet",
