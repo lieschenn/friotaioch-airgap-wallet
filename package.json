@@ -1,6 +1,7 @@
 {
   "name": "friotaioch-airgap-wallet",
-  "version": "0.3.11",
+  "version": "0.3.12",
+  "packageManager": "pnpm@11.25.0",
   "private": true,
   "description": "A watch-only Friotaíoch desktop coordinator for AirGap Vault.",
   "main": "electron/main.cjs",
@@ -13,11 +14,12 @@
   "build": {
     "appId": "com.friotaioch.airgapwallet",
     "productName": "Friotaíoch AirGap Wallet",
-    "files": ["electron/**/*", "index.html", "src/**/*", "package.json"],
+    "files": ["electron/**/*", "index.html", "src/**/*", "assets/icons/**/*", "package.json"],
+    "extraResources": [{ "from": "assets/icons", "to": "icons" }],
     "npmRebuild": false,
     "directories": { "output": "release" },
-    "win": { "target": ["portable"] },
-    "linux": { "target": ["AppImage"] }
+    "win": { "icon": "assets/icons/icon.ico", "target": ["portable"] },
+    "linux": { "icon": "assets/icons", "target": ["AppImage"] }
   },
   "dependencies": {
     "@keystonehq/bc-ur-registry": "0.6.3",
@@ -26,7 +28,7 @@
     "qr-scanner": "^1.4.2"
   },
   "devDependencies": {
-    "electron": "^36.4.0",
+    "electron": "^44.7.0",
     "electron-builder": "^26.0.12"
   }
 }

@@ -265,7 +265,7 @@ async function restoreConnectionSettings() {
 }
 function connectedUi(connected) {
   state.connected = connected
-  const color = connected ? '#9ecf5a' : '#75817b'
+  const color = connected ? '#43b985' : '#75817b'
   $('#nodeDot').style.background = color
   $('#sidebarDot').style.background = color
   $('#nodeStatus').textContent = connected ? 'FRIO node connected' : 'Node offline'
@@ -276,7 +276,7 @@ function connectedUi(connected) {
 function updateAccountState() {
   const paired = !!state.account
   $('#accountBadge').textContent = paired ? 'Paired' : 'Not paired'
-  $('#accountBadge').style.color = paired ? '#bce978' : ''
+  $('#accountBadge').style.color = paired ? '#54ca94' : ''
   $('#settingsAccountState').textContent = paired ? 'Paired' : 'Not paired'
   $('#walletMode').textContent = paired ? 'Watch-only · no private keys' : 'No account paired'
   $('#activeWalletName').textContent = paired ? walletDisplayLabel(state.account) : 'AirGap SegWit'
@@ -456,13 +456,18 @@ async function discoverSavedNodeWallets() {
 async function ensureWatchWallet() {
   const walletName = state.walletName || WALLET
   let loaded = await rpc('listwallets', [], false)
-  if (loaded.includes(walletName)) return
-  const directory = await rpc('listwalletdir', [], false)
-  const exists = (directory.wallets || []).some(item => item.name === walletName)
-  if (exists) await rpc('loadwallet', [walletName], false)
-  else await rpc('createwallet', [walletName, true, true, '', false, true], false)
-  loaded = await rpc('listwallets', [], false)
+  if (!loaded.includes(walletName)) {
+    const directory = await rpc('listwalletdir', [], false)
+    const exists = (directory.wallets || []).some(item => item.name === walletName)
+    if (exists) await rpc('loadwallet', [walletName], false)
+    else await rpc('createwallet', [walletName, true, true, '', false, true], false)
+    loaded = await rpc('listwallets', [], false)
+  }
   if (!loaded.includes(walletName)) throw new Error('Friotaíoch Core did not load the descriptor-only watch wallet.')
+  const info = await rpc('getwalletinfo', [], true, walletName)
+  if (info.private_keys_enabled !== false || info.descriptors !== true) {
+    throw new Error('This node wallet is not a descriptor-based watch-only wallet. It was not used. Choose another wallet name or inspect the node wallet before pairing.')
+  }
 }
 async function parseAccountDescriptor(value) {
   let descriptor = String(value || '').trim()
@@ -925,7 +930,7 @@ function airGapCompatibilityReport() {
   const outputs = Array.isArray(decoded.outputs) ? decoded.outputs : []
   const fingerprint = String(state.account?.fingerprint || '').toLowerCase()
   const lines = [
-    'Friotaíoch AirGap Wallet 0.3.11 · AirGap PSBT compatibility report',
+    'Friotaíoch AirGap Wallet 0.3.12 · AirGap PSBT compatibility report',
     'Privacy: raw PSBT, addresses, amounts, txids, public keys, full fingerprint, and credentials are omitted.',
     `PSBT: v${decoded.psbt_version ?? 0}; encoded bytes=${Math.floor(prepared.psbt.length * 3 / 4)}; format=${prepared.psbt.startsWith('cHNidP8') ? 'base64 PSBT magic present' : 'unexpected encoding'}`,
     `Transaction: version=${decoded.tx?.version ?? 'unavailable'}; locktime=${decoded.tx?.locktime ?? 'unavailable'}; inputs=${inputs.length}; outputs=${outputs.length}`,
@@ -946,9 +951,6 @@ function airGapCompatibilityReport() {
   })
   if (!inputs.length) lines.push('Input metadata: decodepsbt did not expose per-input maps.')
   return lines.join('\n')
-}
-function copyAirGapDiagnostic() {
-  copyText(airGapCompatibilityReport())
 }
 function diagnosticTextarea(report, id = 'psbtDiagnosticText') {
   return `<textarea id="${id}" readonly aria-label="AirGap PSBT compatibility report" style="width:100%;height:190px;margin-top:8px;padding:10px;resize:vertical;background:#0c1216;color:#cbd5cf;border:1px solid #2b373f;border-radius:7px;font:9px/1.5 ui-monospace,Consolas,monospace;user-select:text">${esc(report)}</textarea>`
@@ -1013,10 +1015,14 @@ function psbtReader(bytes) {
 }
 function readPsbtMap(reader) {
   const entries = []
+  const seenKeys = new Set()
   while (true) {
     const keyLength = reader.readCompactSize()
     if (keyLength === 0) return entries
     const key = reader.readBytes(keyLength)
+    const keyHex = bytesToHex(key)
+    if (seenKeys.has(keyHex)) throw new Error('The PSBT contains a duplicate map key.')
+    seenKeys.add(keyHex)
     const value = reader.readBytes(reader.readCompactSize())
     entries.push({ type: key[0], keyData: key.subarray(1), value })
     if (entries.length > 100_000) throw new Error('The PSBT contains too many map entries.')
@@ -1051,10 +1057,18 @@ function base64FromBytes(bytes) {
   for (let offset = 0; offset < bytes.length; offset += 0x8000) binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000))
   return btoa(binary)
 }
-function addExplicitSighashAll(psbtBase64) {
+function psbtBytesFromBase64(value, maximumLength = 2_000_000) {
+  if (typeof value !== 'string' || value.length < 8 || value.length > maximumLength || value.length % 4 !== 0 ||
+      !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value)) {
+    throw new Error('The PSBT payload is invalid or too large to inspect.')
+  }
   let binary
-  try { binary = atob(psbtBase64) } catch { throw new Error('The node returned a PSBT that is not valid base64.') }
-  const bytes = Uint8Array.from(binary, character => character.charCodeAt(0))
+  try { binary = atob(value) } catch { throw new Error('The PSBT payload is not valid base64.') }
+  if (btoa(binary) !== value || !binary.startsWith('psbt\xff')) throw new Error('The payload is not a valid canonical PSBT.')
+  return Uint8Array.from(binary, character => character.charCodeAt(0))
+}
+function addExplicitSighashAll(psbtBase64) {
+  const bytes = psbtBytesFromBase64(psbtBase64)
   const reader = psbtReader(bytes)
   if (bytesToHex(reader.readBytes(5)) !== '70736274ff') throw new Error('The node returned data that is not a valid PSBT.')
   const globalMap = readPsbtMap(reader)
@@ -1067,7 +1081,14 @@ function addExplicitSighashAll(psbtBase64) {
   const allSighash = Uint8Array.of(1, 0, 0, 0)
   const normalizedInputs = inputMaps.map(map => {
     const existing = map.filter(entry => entry.type === 0x03)
-    if (existing.length) return map
+    if (existing.length) {
+      if (existing.length !== 1 || existing[0].keyData.length !== 0 ||
+          existing[0].value.length !== allSighash.length ||
+          existing[0].value.some((byte, index) => byte !== allSighash[index])) {
+        throw new Error('The node prepared an input with an invalid or non-ALL sighash setting. The wallet will not create a signing QR for it.')
+      }
+      return map
+    }
     return [...map, { type: 0x03, keyData: new Uint8Array(0), value: allSighash }]
   })
   const normalized = concatenateBytes([
@@ -1161,10 +1182,7 @@ function parsePsbtV2Transaction(reader, globalMap) {
   return { version: readLittleEndian(versionBytes, true), locktime, vin, vout }
 }
 function parsePsbtTransaction(psbtBase64) {
-  if (typeof psbtBase64 !== 'string' || psbtBase64.length > 3_000_000) throw new Error('The PSBT payload is invalid or too large to inspect.')
-  let binary
-  try { binary = atob(psbtBase64) } catch { throw new Error('The node returned a PSBT that is not valid base64.') }
-  const bytes = Uint8Array.from(binary, character => character.charCodeAt(0))
+  const bytes = psbtBytesFromBase64(psbtBase64)
   const reader = psbtReader(bytes)
   if (bytesToHex(reader.readBytes(5)) !== '70736274ff') throw new Error('The node returned data that is not a valid PSBT.')
   const globalMap = readPsbtMap(reader)
@@ -1452,8 +1470,7 @@ async function showUnsignedQr() {
   }
   try {
     const encoded = await window.frioDesktop.createSigningQr(rawPsbt)
-    const report = airGapCompatibilityReport()
-    modal('Scan with AirGap Vault', `<p class="modal-copy">This animated QR carries a BC-UR <code>crypto-psbt</code> in classic PSBT v0 format. In Vault, open your Bitcoin SegWit account and choose <b>Scan QR</b>. Compare the expected AirGap review beside the QR before approving. The one-frame and animated QRs use the same PSBT; no need to rescan both.</p><div class="airgap-qr-review-layout"><div class="airgap-qr-column"><div class="qr-stage"><div class="qr-paper"><img id="unsignedQrImage" alt="Unsigned FRIO crypto-psbt animated QR code" /></div><div class="qr-caption">Hold your AirGap phone camera over this screen.</div><div class="qr-counter" id="qrCounter">BC-UR · crypto-psbt · frame 1</div></div></div>${airGapComparisonMarkup(state.unsignedPsbt)}</div><div class="modal-actions"><button class="button button-quiet" id="cancelUnsigned">Cancel</button><button class="button button-secondary" id="showAirGapDiagnostic">Show PSBT report</button><button class="button button-secondary" id="trySingleFrameButton">One-frame QR</button><button class="button button-primary" id="scanSignedButton">Scan signed QR with camera <span>→</span></button></div><div id="psbtDiagnosticPanel" hidden><p class="modal-copy" style="margin-top:14px">This report leaves out addresses, amounts, txids, public keys, the PSBT, and RPC credentials. You can select and copy the text below manually.</p>${diagnosticTextarea(report)}<div class="modal-actions" style="margin-top:9px"><button class="button button-quiet" id="copyPsbtDiagnostic">Copy report</button><button class="button button-secondary" id="hideAirGapDiagnostic">Hide report</button></div></div>`, 'AIRGAP SIGNING')
+    modal('Scan with AirGap Vault', `<p class="modal-copy">This animated QR carries a BC-UR <code>crypto-psbt</code> in classic PSBT v0 format. In Vault, open your Bitcoin SegWit account and choose <b>Scan QR</b>. Compare the expected AirGap review beside the QR before approving. The one-frame and animated QRs use the same PSBT; no need to rescan both.</p><div class="airgap-qr-review-layout"><div class="airgap-qr-column"><div class="qr-stage"><div class="qr-paper"><img id="unsignedQrImage" alt="Unsigned FRIO crypto-psbt animated QR code" /></div><div class="qr-caption">Hold your AirGap phone camera over this screen.</div><div class="qr-counter" id="qrCounter">BC-UR · crypto-psbt · frame 1</div></div></div>${airGapComparisonMarkup(state.unsignedPsbt)}</div><div class="modal-actions"><button class="button button-quiet" id="cancelUnsigned">Cancel</button><button class="button button-secondary" id="trySingleFrameButton">One-frame QR</button><button class="button button-primary" id="scanSignedButton">Scan signed QR with camera <span>→</span></button></div>`, 'AIRGAP SIGNING')
     $('#modalBackdrop .modal').classList.add('airgap-review-modal')
     const image = $('#unsignedQrImage')
     const showFrame = async dataUrl => {
@@ -1483,26 +1500,19 @@ async function showUnsignedQr() {
     state.qrTimer = setTimeout(advanceFrame, 700)
     $('#cancelUnsigned').addEventListener('click', closeModal)
     $('#trySingleFrameButton').addEventListener('click', () => showSingleFrameSigningQr(rawPsbt))
-    $('#showAirGapDiagnostic').addEventListener('click', () => { $('#psbtDiagnosticPanel').hidden = false })
-    $('#hideAirGapDiagnostic').addEventListener('click', () => { $('#psbtDiagnosticPanel').hidden = true })
-    $('#copyPsbtDiagnostic').addEventListener('click', copyAirGapDiagnostic)
     $('#scanSignedButton').addEventListener('click', () => showSignedScanner())
   } catch (error) { toast(`Could not encode the PSBT QR: ${error.message}`, true) }
 }
 async function showSingleFrameSigningQr(psbtBase64) {
   try {
     const dataUrl = await window.frioDesktop.createSingleSigningQr(psbtBase64)
-    const report = airGapCompatibilityReport()
-    modal('One-frame AirGap QR', `<p class="modal-copy">This is the same unsigned PSBT v0 in a single-frame BC-UR <code>crypto-psbt</code> QR. Compare the expected AirGap review beside the QR, then check the recipient and amount on Vault before approving.</p><div class="airgap-qr-review-layout"><div class="airgap-qr-column"><div class="qr-stage"><div class="qr-paper single-frame"><img id="singleFrameQrImage" alt="Single-frame unsigned FRIO crypto-psbt QR code" /></div><div class="qr-caption">Scan once with AirGap Vault → Bitcoin SegWit → Scan QR.</div><div class="qr-counter">Single-frame BC-UR · crypto-psbt · PSBT v0</div></div></div>${airGapComparisonMarkup(state.unsignedPsbt)}</div><div class="modal-actions"><button class="button button-quiet" id="cancelSingleFrame">Cancel</button><button class="button button-secondary" id="backToAnimatedQr">Back to animated QR</button><button class="button button-secondary" id="showAirGapDiagnostic">Show PSBT report</button><button class="button button-primary" id="scanSignedButton">Scan signed QR with camera <span>→</span></button></div><div id="psbtDiagnosticPanel" hidden><p class="modal-copy" style="margin-top:14px">This report leaves out addresses, amounts, txids, public keys, the PSBT, and RPC credentials. You can select and copy the text below manually.</p>${diagnosticTextarea(report)}<div class="modal-actions" style="margin-top:9px"><button class="button button-quiet" id="copyPsbtDiagnostic">Copy report</button><button class="button button-secondary" id="hideAirGapDiagnostic">Hide report</button></div></div>`, 'QR DIAGNOSTIC')
+    modal('One-frame AirGap QR', `<p class="modal-copy">This is the same unsigned PSBT v0 in a single-frame BC-UR <code>crypto-psbt</code> QR. Compare the expected AirGap review beside the QR, then check the recipient and amount on Vault before approving.</p><div class="airgap-qr-review-layout"><div class="airgap-qr-column"><div class="qr-stage"><div class="qr-paper single-frame"><img id="singleFrameQrImage" alt="Single-frame unsigned FRIO crypto-psbt QR code" /></div><div class="qr-caption">Scan once with AirGap Vault → Bitcoin SegWit → Scan QR.</div><div class="qr-counter">Single-frame BC-UR · crypto-psbt · PSBT v0</div></div></div>${airGapComparisonMarkup(state.unsignedPsbt)}</div><div class="modal-actions"><button class="button button-quiet" id="cancelSingleFrame">Cancel</button><button class="button button-secondary" id="backToAnimatedQr">Back to animated QR</button><button class="button button-primary" id="scanSignedButton">Scan signed QR with camera <span>→</span></button></div>`, 'AIRGAP SIGNING')
     $('#modalBackdrop .modal').classList.add('airgap-review-modal')
     const image = $('#singleFrameQrImage')
     image.src = dataUrl
     if (typeof image.decode === 'function') await image.decode()
     $('#cancelSingleFrame').addEventListener('click', closeModal)
     $('#backToAnimatedQr').addEventListener('click', showUnsignedQr)
-    $('#showAirGapDiagnostic').addEventListener('click', () => { $('#psbtDiagnosticPanel').hidden = false })
-    $('#hideAirGapDiagnostic').addEventListener('click', () => { $('#psbtDiagnosticPanel').hidden = true })
-    $('#copyPsbtDiagnostic').addEventListener('click', copyAirGapDiagnostic)
     $('#scanSignedButton').addEventListener('click', showSignedScanner)
   } catch (error) {
     toast(`One-frame QR unavailable: ${error.message}`, true)
@@ -1642,8 +1652,9 @@ function transactionShape(decoded) {
 async function verifySignedPsbt(signedPsbt) {
   try {
     if (!state.unsignedPsbt) throw new Error('The prepared transaction expired. Prepare it again before signing.')
+    const parsedSignedTransaction = parsePsbtTransaction(signedPsbt)
     const decodedSigned = await rpc('decodepsbt', [signedPsbt], false)
-    mergeTransactionDecode(decodedSigned, parsePsbtTransaction(signedPsbt))
+    mergeTransactionDecode(decodedSigned, parsedSignedTransaction)
     if (transactionShape(decodedSigned) !== transactionShape(state.unsignedPsbt.decoded)) throw new Error('The signed QR changed the transaction outputs or inputs. It was rejected and will not be broadcast.')
     const signedInputs = Array.isArray(decodedSigned.inputs) ? decodedSigned.inputs : []
     const hasSignature = input => countMapFields(input.partial_signatures) > 0 ||

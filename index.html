@@ -7,12 +7,13 @@
     <meta name="theme-color" content="#0b0e12" />
     <title>Friotaíoch AirGap Wallet</title>
     <link rel="stylesheet" href="./src/style.css" />
+    <link rel="stylesheet" href="./src/refinements.css" />
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
         <div class="brand-lockup">
-          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+          <img class="brand-mark" src="./assets/icons/64x64.png" alt="" aria-hidden="true" />
           <div><div class="brand-name">FRIOTAÍOCH</div><div class="brand-caption">DESKTOP WALLET</div></div>
         </div>
         <div class="network-chip"><span class="status-dot"></span><span>FRIO MAINNET</span><span class="network-caret">⌄</span></div>
@@ -26,7 +27,7 @@
         <div class="side-spacer"></div>
         <div class="vault-card"><div class="vault-icon">◈</div><div><div class="vault-title">Keys stay offline</div><div class="vault-copy">Transactions are signed in AirGap Vault.</div></div><span class="vault-check">✓</span></div>
         <button class="nav-item settings-link" data-page="settings"><span class="nav-icon">⚙</span>Settings</button>
-        <div class="sidebar-footer"><span class="footer-version">FRIO AIRGAP · 0.3.11</span><span class="connection-state"><i id="sidebarDot"></i><span id="sidebarStatus">Not connected</span></span></div>
+        <div class="sidebar-footer"><span class="footer-version">FRIO AIRGAP · 0.3.12</span><span class="connection-state"><i id="sidebarDot"></i><span id="sidebarStatus">Not connected</span></span></div>
       </aside>
 
       <main class="main-area">
@@ -57,7 +58,7 @@
             </article>
             <article class="node-card panel">
               <div class="card-eyebrow">NETWORK STATUS</div>
-              <div class="node-status-row"><span class="node-symbol">⌘</span><div><strong id="nodeCardTitle">Local node required</strong><small id="nodeCardCopy">Your desktop connects only to a local FRIO node.</small></div></div>
+              <div class="node-status-row"><span class="node-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="m7.5 7.5 3.3 8M16.5 7.5l-3.3 8M8 6h8"/></svg></span><div><strong id="nodeCardTitle">Local node required</strong><small id="nodeCardCopy">Your desktop connects only to a local FRIO node.</small></div></div>
               <div class="node-details"><div><span>Network</span><strong id="networkName">FRIO mainnet</strong></div><div><span>Block height</span><strong id="blockHeight">—</strong></div></div>
               <button class="text-button" id="nodeSettingsLink">Node connection <span>→</span></button>
             </article>
@@ -66,7 +67,7 @@
           <div class="section-title-row"><div><div class="eyebrow">WALLET</div><h2>Account overview</h2></div><span class="section-note" id="walletMode">Watch-only · no private keys</span></div>
           <div class="account-grid">
             <article class="account-card panel"><div class="account-header"><div class="account-icon">▧</div><div><strong id="activeWalletName">AirGap SegWit</strong><span id="accountPath">BIP84 · m/84′/0′/0′</span></div><span class="account-badge" id="accountBadge">Not paired</span></div><div class="account-address"><span id="currentAddressLabel">RECEIVE ADDRESS · INDEX #0</span><div class="account-address-content"><div id="currentAddress">Pair a Vault account to generate an address</div><button class="copy-button" id="copyAddress" aria-label="Copy FRIO address">▢</button></div></div><button class="button button-secondary button-full" id="receiveButton">View first receive address <span>→</span></button></article>
-            <article class="security-card panel"><div class="security-heading"><span class="security-lock">◈</span><div><strong>Air-gapped signing</strong><span>Private keys remain on your Vault phone</span></div></div><div class="security-line"><span class="security-check">✓</span><span>Desktop stores public account details only</span></div><div class="security-line"><span class="security-check">✓</span><span>Unsigned PSBTs move by animated QR</span></div><div class="security-line"><span class="security-check">✓</span><span>Signed transaction is checked before broadcast</span></div><button class="text-button" id="securityLink">How signing works <span>→</span></button></article>
+            <article class="security-card panel"><div class="security-heading"><span class="security-lock" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 19 6v5c0 4.5-2.7 8-7 10-4.3-2-7-5.5-7-10V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><div><strong>Air-gapped signing</strong><span>Private keys remain on your Vault phone</span></div></div><div class="security-line"><span class="security-check">✓</span><span>Desktop stores public account details only</span></div><div class="security-line"><span class="security-check">✓</span><span>Unsigned PSBTs move by animated QR</span></div><div class="security-line"><span class="security-check">✓</span><span>Signed transaction is checked before broadcast</span></div><button class="text-button" id="securityLink">How signing works <span>→</span></button></article>
           </div>
           <div class="section-title-row activity-heading"><div><div class="eyebrow">LATEST</div><h2>Recent activity</h2></div><button class="text-button" data-nav="activity">All activity <span>→</span></button></div>
           <article class="activity-card panel" id="recentActivity"><div class="empty-state"><span class="empty-icon">↕</span><strong>No activity yet</strong><span>Connect your node and pair an AirGap account.</span></div></article>

@@ -1,0 +1,693 @@
+/* Type, spacing, and icon refinements layered over the original wallet theme. */
+:root {
+  --muted: #98a6ab;
+}
+
+body {
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+.sidebar {
+  padding-top: 26px;
+}
+
+.brand-lockup {
+  height: 58px;
+  gap: 12px;
+  padding: 0 8px 10px;
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  padding: 3px;
+  border: 1px solid rgba(60, 190, 135, .22);
+  border-radius: 12px;
+  background: linear-gradient(145deg, #172720, #101916);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, .2);
+}
+
+.brand-name {
+  font-size: 14px;
+  letter-spacing: .85px;
+}
+
+.brand-caption {
+  font-size: 10.5px;
+  letter-spacing: 1.35px;
+}
+
+.network-chip {
+  height: 38px;
+  font-size: 11px;
+  margin-bottom: 27px;
+}
+
+.side-label,
+.eyebrow,
+.card-eyebrow {
+  color: #91a09f;
+  font-size: 11px;
+}
+
+.nav-item {
+  height: 43px;
+  font-size: 14px;
+}
+
+.nav-icon {
+  font-size: 18px;
+}
+
+.vault-card {
+  padding: 14px 11px;
+}
+
+.vault-title {
+  font-size: 13px;
+}
+
+.vault-copy {
+  font-size: 12px;
+}
+
+.footer-version {
+  font-size: 10px;
+}
+
+.connection-state {
+  font-size: 11px;
+}
+
+.main-area {
+  padding-right: 42px;
+  padding-left: 42px;
+}
+
+.topbar {
+  height: 76px;
+}
+
+.breadcrumbs {
+  font-size: 13px;
+}
+
+.topbar-actions {
+  gap: 12px;
+}
+
+.node-pill {
+  padding: 9px 13px;
+  font-size: 12px;
+}
+
+.icon-button {
+  width: 36px;
+  height: 36px;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  font-size: 14px;
+  color: #e7f6ef;
+  background: #164b37;
+  border-color: #277650;
+}
+
+.content-page {
+  max-width: 1420px;
+  padding-top: 34px;
+}
+
+.page-heading {
+  margin-bottom: 25px;
+}
+
+.page-heading h1 {
+  font-size: 30px;
+  letter-spacing: -.75px;
+}
+
+.subheading {
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.button {
+  min-height: 40px;
+  height: 40px;
+  padding-right: 16px;
+  padding-left: 16px;
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+.text-button {
+  font-size: 13px;
+}
+
+.setup-banner {
+  min-height: 220px;
+  padding: 28px 30px;
+  gap: 24px;
+  border-radius: 17px;
+}
+
+.setup-copy h2 {
+  font-size: 21px;
+}
+
+.setup-copy p {
+  font-size: 13px;
+}
+
+.step-row {
+  font-size: 12px;
+}
+
+.overview-grid,
+.account-grid {
+  gap: 18px;
+}
+
+.balance-card,
+.node-card {
+  height: auto;
+  min-height: 168px;
+}
+
+.balance-card {
+  padding: 22px 24px;
+}
+
+.balance-state {
+  font-size: 11px;
+}
+
+.balance-line {
+  margin-top: 18px;
+}
+
+.balance-line strong {
+  font-size: clamp(32px, 2.25vw, 41px);
+  letter-spacing: -1.1px;
+}
+
+.balance-line > span {
+  font-size: 14px;
+}
+
+.balance-bottom {
+  margin-top: 17px;
+  font-size: 12px;
+}
+
+.balance-watermark {
+  display: none;
+}
+
+.node-card {
+  padding: 21px 22px;
+}
+
+.node-status-row {
+  margin: 16px 0 14px;
+}
+
+.node-status-row strong {
+  font-size: 14px;
+}
+
+.node-status-row small {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.node-symbol {
+  width: 38px;
+  height: 38px;
+  flex: none;
+}
+
+.node-symbol svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.node-details {
+  gap: 30px;
+  padding-top: 11px;
+}
+
+.node-details span,
+.node-details strong {
+  font-size: 12px;
+}
+
+.section-title-row {
+  margin-top: 27px;
+  margin-bottom: 13px;
+}
+
+.section-title-row h2 {
+  font-size: 18px;
+}
+
+.section-note {
+  font-size: 12px;
+}
+
+.account-card,
+.security-card {
+  min-height: 198px;
+  padding: 20px 21px;
+}
+
+.account-icon,
+.settings-icon {
+  width: 38px;
+  height: 38px;
+  font-size: 17px;
+}
+
+.account-header strong,
+.security-heading strong {
+  font-size: 14px;
+}
+
+.account-header span,
+.security-heading span {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.account-badge {
+  font-size: 10px !important;
+}
+
+.account-address {
+  margin: 18px 0 12px;
+  padding: 12px;
+}
+
+.account-address > span {
+  font-size: 10px;
+}
+
+.account-address code {
+  font-size: 12px;
+}
+
+.copy-button {
+  width: 30px;
+  height: 30px;
+}
+
+.account-card > .button {
+  height: 38px;
+}
+
+.security-heading {
+  gap: 12px;
+  margin-bottom: 17px;
+}
+
+.security-lock {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border: 1px solid rgba(63, 179, 126, .2);
+  background: linear-gradient(145deg, #1b2b24, #17221e);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .025);
+}
+
+.security-lock svg {
+  display: block;
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: #54ca94;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.security-line {
+  gap: 10px;
+  margin: 10px 0;
+  font-size: 12px;
+}
+
+.security-check {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  font-size: 11px;
+}
+
+.security-card > .text-button {
+  margin-top: 10px;
+}
+
+.activity-heading {
+  margin-top: 26px;
+}
+
+.activity-card {
+  min-height: 180px;
+}
+
+.tx-list th {
+  height: 40px;
+  font-size: 10px;
+  letter-spacing: .9px;
+}
+
+.tx-list td {
+  height: 52px;
+  font-size: 12px;
+}
+
+.tx-list tbody tr {
+  transition: background-color .15s ease;
+}
+
+.tx-list tbody tr:hover {
+  background: rgba(255, 255, 255, .025);
+}
+
+.tx-type {
+  gap: 11px;
+}
+
+.tx-avatar {
+  width: 29px;
+  height: 29px;
+}
+
+.tx-state {
+  font-size: 11px;
+}
+
+.main-footer {
+  font-size: 10px;
+}
+
+.main-footer span:last-child {
+  font-size: 11px;
+}
+
+.receive-card,
+.send-card {
+  padding: 24px;
+}
+
+.receive-card-title strong,
+.send-card-heading strong {
+  font-size: 15px;
+}
+
+.receive-card-title span,
+.send-card-heading span {
+  font-size: 12px;
+}
+
+.receive-icon,
+.send-step-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.receive-qr-wrap {
+  width: 250px;
+  height: 250px;
+}
+
+.receive-address-text {
+  font-size: 12px;
+}
+
+.receive-note {
+  font-size: 12px;
+}
+
+.send-card label,
+.settings-form label {
+  font-size: 13px;
+}
+
+.input-wrap {
+  height: 46px;
+  border-radius: 9px;
+}
+
+.input-wrap input,
+.settings-form input {
+  font-size: 14px;
+}
+
+.field-hint {
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.send-balance {
+  font-size: 12px;
+}
+
+.settings-form input {
+  height: 44px;
+}
+
+.modal-header h2 {
+  font-size: 19px;
+}
+
+.modal-copy {
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.modal-form label {
+  font-size: 12px;
+}
+
+.modal-form input,
+.modal-form textarea {
+  font-size: 13px;
+}
+
+.modal-note,
+.confirm-line {
+  font-size: 12px;
+}
+
+.review-row {
+  font-size: 12px;
+}
+
+.qr-caption,
+.scan-status {
+  font-size: 12px;
+}
+
+.qr-counter {
+  font-size: 10px;
+}
+
+.camera-frame .camera-hint {
+  font-size: 12px;
+}
+
+.address-comparison code {
+  font-size: 11px;
+}
+
+.address-row .address-comparison code {
+  font-size: 10.5px;
+}
+
+.airgap-review-heading > div > strong {
+  font-size: 15px;
+}
+
+.airgap-review-badge {
+  font-size: 10px;
+}
+
+.airgap-review-stats span {
+  font-size: 10px;
+}
+
+.airgap-review-stats strong {
+  font-size: 13px;
+}
+
+.airgap-review-stats small {
+  font-size: 9px;
+}
+
+.airgap-flow-section-title,
+.airgap-flow-title > span {
+  font-size: 9px;
+}
+
+.airgap-flow-title > strong {
+  font-size: 11px;
+}
+
+.airgap-flow-row .address-comparison code {
+  font-size: 10px;
+}
+
+.airgap-review-note {
+  font-size: 10px;
+}
+
+:focus-visible {
+  outline: 2px solid #54ca94;
+  outline-offset: 3px;
+}
+
+::selection {
+  color: #f1fff8;
+  background: rgba(20, 158, 105, .45);
+}
+
+@media (max-width: 1100px) {
+  .main-area {
+    padding-right: 25px;
+    padding-left: 25px;
+  }
+
+  .content-page {
+    max-width: none;
+  }
+
+  .overview-grid,
+  .account-grid {
+    gap: 14px;
+  }
+
+  .balance-card,
+  .node-card {
+    min-height: 176px;
+  }
+}
+
+@media (max-width: 850px) {
+  .main-area {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .content-page {
+    padding-top: 24px;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+  }
+
+  .sidebar .brand-lockup {
+    justify-content: center;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .sidebar .brand-lockup > div:nth-child(2),
+  .sidebar .network-chip {
+    display: none;
+  }
+
+  .sidebar .nav-item {
+    font-size: 0;
+  }
+
+  .sidebar .nav-icon {
+    font-size: 18px;
+  }
+
+  .account-card,
+  .security-card {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  body {
+    font-size: 14px;
+  }
+
+  .main-area {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .content-page {
+    padding-top: 20px;
+  }
+
+  .page-heading h1 {
+    font-size: 25px;
+  }
+
+  .subheading {
+    font-size: 13px;
+  }
+
+  .button {
+    min-height: 38px;
+    height: 38px;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .node-pill {
+    padding: 7px 9px;
+    font-size: 10px;
+  }
+
+  .balance-line strong {
+    font-size: clamp(29px, 8vw, 34px);
+  }
+
+  .receive-card,
+  .send-card {
+    padding: 17px;
+  }
+
+  .airgap-review-stats strong {
+    font-size: 11px;
+  }
+
+  .airgap-flow-row .address-comparison code {
+    font-size: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
